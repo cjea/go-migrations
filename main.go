@@ -11,7 +11,7 @@ import (
 )
 
 type opts struct {
-	dir  string
+	kind string
 	path string
 	drop bool
 }
@@ -25,7 +25,7 @@ func main() {
 	if opts.drop {
 		err = m.Drop()
 	} else {
-		switch opts.dir {
+		switch opts.kind {
 		case "up":
 			err = m.Up()
 		case "down":
@@ -53,11 +53,11 @@ func initOpts() opts {
 	if len(os.Args) > 1 {
 		drop = os.Args[1] == "drop"
 	}
-	dir := flag.String("dir", "up", "up | down (defaults to up)")
+	kind := flag.String("kind", "up", "up | down (defaults to up)")
 	path := flag.String("path", "", "path to migrations directory")
 	flag.Parse()
 	return opts{
-		dir:  *dir,
+		kind: *kind,
 		path: *path,
 		drop: drop,
 	}
