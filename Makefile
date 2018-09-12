@@ -36,10 +36,9 @@ connect-db:
 money-up: build image network connect-db
 	docker run --rm -it \
 		--network=migration-network \
-		--entrypoint /main \
 		--name=money-migrator \
 		money-migrator \
-		-path migrations/ -kind up
+		-dbhost $(dbhost) -path migrations/ -kind up
 
 money-down: build image
 	docker run --rm \
@@ -47,7 +46,7 @@ money-down: build image
 		--name=money-migrator \
 		--entrypoint /main \
 		money-migrator \
-		-path migrations/ -kind down
+		-dbhost $(dbhost) -path migrations/ -kind down
 
 money-drop: build image
 	docker run --rm \
@@ -55,4 +54,4 @@ money-drop: build image
 		--name=money-migrator \
 		--entrypoint /main \
 		money-migrator \
-		drop
+		-dbhost $(dbhost) drop
