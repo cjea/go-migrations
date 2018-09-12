@@ -12,13 +12,41 @@ psql:
 	psql -h localhost -U postgres
 
 build:
-	go build main.go
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+		go build main.go
 
 up:
 	./main --path=migrations/
 
 down:
-	./main --path=migrations/ -dir=down
+	./main --path=migrations/ -kind=down
 
 drop:
 	./main drop
+
+image:
+	docker image build . -t money-migrator
+
+money-up: build image
+	docker run --rm \
+		--network=host \
+		--name=money-migrator \
+		--entrypoint /main \
+		money-migrator \
+		-path migrations/ -kind up
+
+money-down: build image
+	docker run --rm \
+		--network=host \
+		--name=money-migrator \
+		--entrypoint /main \
+		money-migrator \
+		-path migrations/ -kind down
+
+money-drop: build image
+	docker run --rm \
+		--network=host \
+		--name=money-migrator \
+		--entrypoint /main \
+		money-migrator \
+		drop
