@@ -27,17 +27,23 @@ drop:
 image:
 	docker image build . -t money-migrator
 
-money-up: build image
-	docker run --rm \
-		--network=host \
-		--name=money-migrator \
+network:
+	docker network create migration-network || true
+
+connect-db:
+	docker network connect migration-network cj-test-db || true
+
+money-up: build image network connect-db
+	docker run --rm -it \
+		--network=migration-network \
 		--entrypoint /main \
+		--name=money-migrator \
 		money-migrator \
 		-path migrations/ -kind up
 
 money-down: build image
 	docker run --rm \
-		--network=host \
+		--network=migration-network \
 		--name=money-migrator \
 		--entrypoint /main \
 		money-migrator \
@@ -45,7 +51,7 @@ money-down: build image
 
 money-drop: build image
 	docker run --rm \
-		--network=host \
+		--network=migration-network \
 		--name=money-migrator \
 		--entrypoint /main \
 		money-migrator \

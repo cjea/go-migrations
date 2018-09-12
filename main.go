@@ -44,8 +44,9 @@ func fileDSN(path string) string {
 }
 
 func dbDSN() string {
-	// should get info from environment
-	return "postgres://postgres@localhost:5432/postgres?sslmode=disable"
+	// pass host from env instead of hardcoding it
+	// docker network inspect migration-network
+	return "postgres://postgres@172.18.0.2/postgres?sslmode=disable"
 }
 
 func initOpts() opts {
