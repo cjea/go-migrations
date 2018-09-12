@@ -1,8 +1,0 @@
-#!/bin/bash
-
-get-db-host() {
-	docker inspect "$1" | jq \
-		'.[0].NetworkSettings.Networks["migration-network"].IPAddress'
-}
-
-make dbhost="$(get-db-host cj-test-db)" "$1"

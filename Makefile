@@ -29,7 +29,7 @@ up: build image connect-db
 		--network=migration-network \
 		--name=money-migrator \
 		money-migrator \
-		-dbhost $(dbhost) -path migrations/ -kind up
+		-dbhost "cj-test-db" -path migrations/ -kind up
 
 down: build image connect-db
 	docker run --rm \
@@ -37,7 +37,7 @@ down: build image connect-db
 		--name=money-migrator \
 		--entrypoint /main \
 		money-migrator \
-		-dbhost $(dbhost) -path migrations/ -kind down
+		-dbhost "cj-test-db" -path migrations/ -kind down
 
 drop: build image connect-db
 	docker run --rm \
@@ -45,4 +45,4 @@ drop: build image connect-db
 		--name=money-migrator \
 		--entrypoint /main \
 		money-migrator \
-		-dbhost $(dbhost) drop
+		-dbhost "cj-test-db" drop
