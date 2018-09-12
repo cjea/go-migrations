@@ -19,10 +19,10 @@ build:
 	go build main.go
 
 up:
-	./main --path=/Users/cjapel/go/src/migrations-test/migrations/
+	./main --path=migrations/
 
 down:
-	./main --path=/Users/cjapel/go/src/migrations-test/migrations/ -dir=down
+	./main --path=migrations/ -dir=down
 
 drop:
 	./main drop
