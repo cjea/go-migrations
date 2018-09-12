@@ -12,10 +12,6 @@ psql:
 	psql -h localhost -U postgres
 
 build:
-	if [ -e "main" ] ; \
-	then \
-		rm main ; \
-	fi; \
 	go build main.go
 
 up:
