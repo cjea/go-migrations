@@ -15,15 +15,6 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
 		go build main.go
 
-up:
-	./main --path=migrations/
-
-down:
-	./main --path=migrations/ -kind=down
-
-drop:
-	./main drop
-
 image:
 	docker image build . -t money-migrator
 
@@ -33,14 +24,14 @@ network:
 connect-db:
 	docker network connect migration-network cj-test-db || true
 
-money-up: build image network connect-db
+up: build image network connect-db
 	docker run --rm -it \
 		--network=migration-network \
 		--name=money-migrator \
 		money-migrator \
 		-dbhost $(dbhost) -path migrations/ -kind up
 
-money-down: build image
+down: build image
 	docker run --rm \
 		--network=migration-network \
 		--name=money-migrator \
@@ -48,7 +39,7 @@ money-down: build image
 		money-migrator \
 		-dbhost $(dbhost) -path migrations/ -kind down
 
-money-drop: build image
+drop: build image
 	docker run --rm \
 		--network=migration-network \
 		--name=money-migrator \
