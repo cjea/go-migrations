@@ -21,17 +21,17 @@ image:
 network:
 	docker network create migration-network || true
 
-connect-db:
+connect-db: network
 	docker network connect migration-network cj-test-db || true
 
-up: build image network connect-db
+up: build image connect-db
 	docker run --rm -it \
 		--network=migration-network \
 		--name=money-migrator \
 		money-migrator \
 		-dbhost $(dbhost) -path migrations/ -kind up
 
-down: build image
+down: build image connect-db
 	docker run --rm \
 		--network=migration-network \
 		--name=money-migrator \
@@ -39,7 +39,7 @@ down: build image
 		money-migrator \
 		-dbhost $(dbhost) -path migrations/ -kind down
 
-drop: build image
+drop: build image connect-db
 	docker run --rm \
 		--network=migration-network \
 		--name=money-migrator \
