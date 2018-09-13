@@ -24,25 +24,32 @@ network:
 connect-db: network
 	docker network connect migration-network cj-test-db || true
 
-up: build image connect-db
+up: image connect-db
 	docker run --rm -it \
 		--network=migration-network \
-		--name=money-migrator \
+		--volume="$(PWD)/migrations:/migrations" \
 		money-migrator \
-		-dbhost "cj-test-db" -path migrations/ -kind up
+		migrate \
+			-database "postgres://postgres@cj-test-db/postgres?sslmode=disable" \
+			-source "file:///migrations" \
+			up
 
-down: build image connect-db
+down: image connect-db
 	docker run --rm \
 		--network=migration-network \
-		--name=money-migrator \
-		--entrypoint /main \
+		--volume="$(PWD)/migrations:/migrations" \
 		money-migrator \
-		-dbhost "cj-test-db" -path migrations/ -kind down
+		migrate \
+			-database "postgres://postgres@cj-test-db/postgres?sslmode=disable" \
+			-source "file:///migrations" \
+			down
 
-drop: build image connect-db
+drop: image connect-db
 	docker run --rm \
 		--network=migration-network \
-		--name=money-migrator \
-		--entrypoint /main \
+		--volume="$(PWD)/migrations:/migrations" \
 		money-migrator \
-		-dbhost "cj-test-db" drop
+		migrate \
+			-database "postgres://postgres@cj-test-db/postgres?sslmode=disable" \
+			-source "file:///migrations" \
+			drop
