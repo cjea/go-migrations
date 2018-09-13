@@ -1,9 +1,13 @@
+DB := cj-test-db
+MIGRATOR_IMAGE := migrator
+MIGRATION_NETWORK := migration-network
+
 start-db:
-		docker start cj-test-db || echo "Creating DB . . . " && \
-			docker run -dt --name cj-test-db -p 5432:5432 postgres:10.4-alpine
+		docker start "$(DB)" || echo "Creating DB . . . " && \
+			docker run -dt --name "$(DB)" -p 5432:5432 postgres:10.4-alpine
 
 stop-db:
-		docker stop cj-test-db
+		docker stop "$(DB)"
 
 run-schema:
 		psql --user=postgres --host=localhost --file=./schema.sql
@@ -16,40 +20,50 @@ build:
 		go build main.go
 
 image:
-	docker image build . -t money-migrator
+	docker image build . -t "$(MIGRATOR_IMAGE)"
 
 network:
-	docker network create migration-network || true
+	docker network create "$(MIGRATION_NETWORK)" || true
 
 connect-db: network
-	docker network connect migration-network cj-test-db || true
+	docker network connect "$(MIGRATION_NETWORK)" "$(DB)" || true
 
 up: image connect-db
 	docker run --rm -it \
-		--network=migration-network \
+		--network="$(MIGRATION_NETWORK)" \
 		--volume="$(PWD)/migrations:/migrations" \
-		money-migrator \
+		"$(MIGRATOR_IMAGE)" \
 		migrate \
-			-database "postgres://postgres@cj-test-db/postgres?sslmode=disable" \
+			-database "postgres://postgres@$(DB)/postgres?sslmode=disable" \
 			-source "file:///migrations" \
 			up
 
 down: image connect-db
 	docker run --rm \
-		--network=migration-network \
+		--network="$(MIGRATION_NETWORK)" \
 		--volume="$(PWD)/migrations:/migrations" \
-		money-migrator \
+		"$(MIGRATOR_IMAGE)" \
 		migrate \
-			-database "postgres://postgres@cj-test-db/postgres?sslmode=disable" \
+			-database "postgres://postgres@$(DB)/postgres?sslmode=disable" \
 			-source "file:///migrations" \
 			down
 
 drop: image connect-db
 	docker run --rm \
-		--network=migration-network \
+		--network="$(MIGRATION_NETWORK)" \
 		--volume="$(PWD)/migrations:/migrations" \
-		money-migrator \
+		"$(MIGRATOR_IMAGE)" \
 		migrate \
-			-database "postgres://postgres@cj-test-db/postgres?sslmode=disable" \
+			-database "postgres://postgres@$(DB)/postgres?sslmode=disable" \
 			-source "file:///migrations" \
 			drop
+
+migrate: image connect-db
+	docker run --rm \
+	--network="$(MIGRATION_NETWORK)" \
+	--volume="$(PWD)/migrations:/migrations" \
+	"$(MIGRATOR_IMAGE)" \
+	migrate \
+		-database "postgres://postgres@$(DB)/postgres?sslmode=disable" \
+		-source "file:///migrations" \
+		$(cmd)
