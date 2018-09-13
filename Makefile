@@ -1,4 +1,4 @@
-DB := cj-test-db
+DB_HOST := cj-test-db
 DB_DSN := postgres://postgres@$(DB_HOST)/postgres?sslmode=disable
 MIGRATOR_IMAGE := migrator
 MIGRATION_NETWORK := migration-network
