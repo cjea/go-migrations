@@ -3,6 +3,8 @@
 using golang-migrate to set up basic migrations against a postgres db
 
 ```
+$ make start-db
+
 $ make up
 
 $ make down
