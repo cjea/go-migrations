@@ -9,16 +9,6 @@ start-db:
 stop-db:
 		docker stop "$(DB)"
 
-run-schema:
-		psql --user=postgres --host=localhost --file=./schema.sql
-
-psql:
-	psql -h localhost -U postgres
-
-build:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
-		go build main.go
-
 image:
 	docker image build . -t "$(MIGRATOR_IMAGE)"
 
