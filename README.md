@@ -3,10 +3,9 @@
 using golang-migrate to set up basic migrations against a postgres db
 
 ```
-$ ./migrate up
+$ make up
 
-$ docker exec cj-test-db psql -h localhost -U postgres -c \
-  "SELECT * FROM NEXANS;"
+$ make down
 
-$ ./migrate down
+$ make migrate cmd="up 1"
 ```
